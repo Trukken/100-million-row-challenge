@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> The 100-million-row challenge is now **live**. You have until March 15, 11:59PM to submit your entry!
+> The 100-million-row challenge is now **live**. You have until March 15, 11:59PM CET to submit your entry!
     
 Welcome to the 100-million-row challenge in PHP! Your goal is to parse a data set of page visits into a JSON file. This repository contains all you need to get started locally. Submitting an entry is as easy as sending a pull request to this repository. This competition will run for two weeks: from Feb 24 to March 15, 2026. When it's done, the top three fastest solutions will win a prize! 
 
@@ -12,9 +12,11 @@ composer install
 php tempest data:generate
 ```
 
-By default, the `data:generate` command will generate a dataset of 1,000,000 visits. The real benchmark will use 100,000,000 visits. You can adjust the number of visits as well by running `php tempest data:generate 100_000_000` Next, implement your solution in `app/Parser.php`:
+By default, the `data:generate` command will generate a dataset of 1,000,000 visits. The real benchmark will use 100,000,000 visits. You can adjust the number of visits as well by running `php tempest data:generate 100_000_000`.
 
 Also, the generator will use a seeded randomizer so that, for local development, you work on the same dataset as others. You can overwrite the seed with the `data:generate --seed=123456` parameter, and you can also pass in the `data:generate --no-seed` parameter for an unseeded random data set. The real data set was generated without a seed and is secret.
+
+Next, implement your solution in `app/Parser.php`:
 
 ```php
 final class Parser
@@ -32,7 +34,7 @@ You can always run your implementation to check your work:
 php tempest data:parse
 ```
 
-Furthermore, you can validate whether your output file is formatted correctly by running the `data:validate` command:
+Furthermore, you can validate whether your output file is formatted correctly by running the `data:validate` command. This command will run on a small dataset with a predetermined expected output. If validation succeeds, you can be sure you implemented a working solution:
 
 ```sh
 php tempest data:validate
@@ -79,7 +81,7 @@ Send a pull request to this repository with your solution. The title of your pul
 
 Prizes are sponsored by [PhpStorm](https://www.jetbrains.com/phpstorm/) and [Tideways](https://tideways.com/). The winners will be determined based on the fastest entries submitted, if two equally fast entries are registered, time of submission will be taken into account.
 
-All entries must be submitted before March 16, 2026 (so you have until March 15, 11:59PM to submit). Any entries submitted after the cutoff date won't be taken into account.
+All entries must be submitted before March 16, 2026 (so you have until March 15, 11:59PM CET to submit). Any entries submitted after the cutoff date won't be taken into account.
 
 First place will get:
 
@@ -133,3 +135,7 @@ While testing this challenge, the JIT didn't seem to offer any significant perfo
 #### Can I use FFI?
 
 The point of this challenge is to push PHP to its limits. That's why you're not allowed to use FFI.
+
+#### How long should I wait for benchmark results to come in?
+
+We manually verify each submission before running it on the benchmark sever. Depending on our availability, this means possible waiting times. If we haven't gotten to your submission within 24 hours, feel free to ping @brendt or @xHeaven in a comment to make sure we don't forget you.
