@@ -4,16 +4,18 @@ namespace App;
 
 final class Parser
 {
-    private const int STICHER_PREFIX_LENGTH = 19;
+    private const int STITCHER_PREFIX_LENGTH = 19;
     private const int DATE_LENGTH = 10;
     private const int COMMA_DELIMITER_POSITION = 26;
-    private const int NUM_PROCESSES = 6;
-    private const int CHUNK_SIZE = 2_048_576;
+    private const int MIN_NUM_PROCESSES = 16;
+    private const int CHUNK_SIZE = 2_097_152;
 
 
     public function parse(string $inputPath, string $outputPath): void
     {
-        $numProcesses = self::NUM_PROCESSES;
+        $numProcesses = max(self::MIN_NUM_PROCESSES,
+            (int)shell_exec('nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null') * 2
+        );
         $fileSize = filesize($inputPath);
         $chunkSize = ceil($fileSize / $numProcesses);
 
@@ -26,7 +28,7 @@ final class Parser
         }
         fclose($handle);
         $boundaries[] = $fileSize;
-        
+
         $tempFiles = [];
         $pids = [];
 
@@ -94,11 +96,11 @@ final class Parser
             while ($pos < $newLine) {
                 $newLinePos = strpos($chunk, "\n", $pos);
                 $line = substr($chunk, $pos, $newLinePos - $pos);
-                
-                $content = substr($line, self::STICHER_PREFIX_LENGTH);
-                $path = substr($content, 0, - self::COMMA_DELIMITER_POSITION);
 
-                $date = substr($content, - self::COMMA_DELIMITER_POSITION + 1, self::DATE_LENGTH);
+                $content = substr($line, self::STITCHER_PREFIX_LENGTH);
+                $path = substr($content, 0, -self::COMMA_DELIMITER_POSITION);
+
+                $date = substr($content, -self::COMMA_DELIMITER_POSITION + 1, self::DATE_LENGTH);
                 if (strlen($date) !== self::DATE_LENGTH) {
                     $pos = $newLinePos + 1;
                     continue;
@@ -110,10 +112,10 @@ final class Parser
         }
 
         if ($remainder !== '') {
-            $content = substr($remainder, self::STICHER_PREFIX_LENGTH);
-            $path = substr($content, 0, - self::COMMA_DELIMITER_POSITION);
+            $content = substr($remainder, self::STITCHER_PREFIX_LENGTH);
+            $path = substr($content, 0, -self::COMMA_DELIMITER_POSITION);
 
-            $date = substr($content, - self::COMMA_DELIMITER_POSITION + 1, self::DATE_LENGTH);
+            $date = substr($content, -self::COMMA_DELIMITER_POSITION + 1, self::DATE_LENGTH);
             if (strlen($date) === self::DATE_LENGTH) {
                 $existingPath[$path][$date] = ($existingPath[$path][$date] ?? 0) + 1;
             }
